@@ -1,57 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
-
+import React from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Tasks from "./components/Tasks";
+import NoMatch from "./components/NoMatch";
+import CreateTask from "./components/CreateTask";
+import EditTask from "./components/EditTask";
 function App() {
+  const token = useSelector((state) => state.user.token);
+  const tokenStorage = localStorage.getItem("token");
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <Switch>
+      <Redirect exact from="/" to="/login" />
+      <Route
+        path="/login"
+        render={() => {
+          return token || tokenStorage ? <Redirect to="tasks" /> : <Login />;
+        }}
+      />
+      <Route path="/register" component={Register} />
+      <Route
+        path="/tasks"
+        render={() => {
+          return !tokenStorage ? <Redirect to="/login" /> : <Tasks />;
+        }}
+      />
+      <Route
+        path="/create-task"
+        render={() => {
+          return !tokenStorage ? <Redirect to="/login" /> : <CreateTask />;
+        }}
+      />
+      <Route
+        path="/task/edit/:id"
+        exact
+        render={() => {
+          return !tokenStorage ? <Redirect to="/login" /> : <EditTask />;
+        }}
+      />
+      <Route path="*" component={NoMatch} />
+    </Switch>
   );
 }
 
