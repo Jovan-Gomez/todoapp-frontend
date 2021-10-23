@@ -14,6 +14,7 @@ function App() {
     <Switch>
       <Redirect exact from="/" to="/login" />
       <Route
+      exact
         path="/login"
         render={() => {
           return token || tokenStorage ? <Redirect to="tasks" /> : <Login />;
